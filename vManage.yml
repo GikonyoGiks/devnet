@@ -1,0 +1,39 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Login to a vManage webpage, then use the returned cookie to access the app in later tasks
+      uri:
+        url: https://10.10.10.230/j_security_check
+        method: POST
+        body_format: form-urlencoded
+        body:
+          j_username: admin
+          j_password: admin
+          enter: Log In
+        status_code: 200
+      register: login
+    - name: Second Authentication API call from Ansible Tower to vManage to Retrieve the Token
+      uri:
+        url: https://10.10.10.230/dataservice/client/token
+        method: GET
+        return_content: true
+        headers:
+          Content-Type: application/x-www-form-urlencoded
+          Cookie: "{{ login.cookies_string }}"
+      register: ps
+    - name: Retrieve Feature Templates
+      uri:
+        url: https://10.10.10.230/dataservice/template/feature/types
+        method: GET
+        return_content: true
+        headers:
+          Content-Type: application/x-www-form-urlencoded
+          Cookie: "{{ login.cookies_string }}"
+          X-XSRF-TOKEN: "{{ ps.content }}"
+      register: templates_result
+    - debug:
+        var: ps
+    - debug:
+        var: templates_result
