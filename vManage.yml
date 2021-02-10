@@ -1,45 +1,51 @@
+#This playbook is used to create a Device Template on vManage using Ansible
 ---
 - hosts: localhost
   connection: local
-
+  gather_facts: no
   tasks:
-    - name: Login to a vManage webpage, then use the returned cookie to access the app in later tasks
+    - name: Login to the vManage webpage, then use the returned cookie to get a token for authentication to be used in later tasks
       uri:
-        url: https://10.10.10.230/j_security_check
+        url: https://10.10.10.230/j_security_check  #url for retrieving session cookie
         method: POST
         body_format: form-urlencoded
         body:
-          j_username: admin
-          j_password: admin
+          j_username: admin #Username for vManage
+          j_password: admin #Password for vManage
           enter: Log In
         status_code: 200
         validate_certs: False
-      register: login
+      register: login #Saves results of this task so that we are able to use the cookie for later tasks
     - name: Second Authentication API call from Ansible Tower to vManage to Retrieve the Token
       uri:
-        url: https://10.10.10.230/dataservice/client/token
+        url: https://10.10.10.230/dataservice/client/token #url for retrieving token
         method: GET
         return_content: true
         validate_certs: False
         headers:
           Content-Type: application/x-www-form-urlencoded
-          Cookie: "{{ login.cookies_string }}"
-      register: ps
+          Cookie: "{{ login.cookies_string }}" #refers to the cookie retrieved from the 1st Task
+      register: token
     - name: Create Device Template
       uri:
-        url: https://10.10.10.230/dataservice/template/device/feature
+        url: https://10.10.10.230/dataservice/template/device/feature #URL for creating the template
         method: POST
         return_content: true
         validate_certs: False
         headers:
-          Content-Type: application/x-www-form-urlencoded
-          Cookie: "{{ login.cookies_string }}"
-          X-XSRF-TOKEN: "{{ ps.content }}"
+          Content-Type: application/json
+          Cookie: "{{ login.cookies_string }}" #uses the cookie generated in the 1st Task
+          X-XSRF-TOKEN: "{{ token.content }}" #Uses the token generated in the 2nd Task
         body_format: json
+        #Template ID is a unique system identifier for a specific template in vManage
+        #Template Type refers to the category of the Template chosen
+        #Template ID and Type information can be retrieved before execution of the playbook using postman
+        #Template name should be unique
+        #deviceType is the Device Model
         body: >
           {
-          	"templateName": "CSR_DEVICE_EFT_TEST_v4",
-          	"templateDescription": "CSR_EFT_Device Template TEST v4",
+          	"templateName": "CSR_DEVICE_EFT_TEST_v5",
+          	"templateDescription": "CSR_EFT_Device Template TEST v5",
           	"deviceType": "vedge-CSR-1000v",
           	"configType": "template",
           	"factoryDefault": false,
@@ -117,8 +123,11 @@
           	}
           	]
           }
-      register: templates_result
-    - debug:
-        var: ps
-    - debug:
-        var: templates_result
+      register: templates_result #Stores the results of the task for creating the template
+    - name: Outputs the token value to be used for authentication
+      debug:
+           var: token
+    - name: Outputs the results of the creating the template task. If there were any errors they should be seen here
+      debug:
+           var: templates_result
+
