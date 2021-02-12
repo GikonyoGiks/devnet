@@ -1,4 +1,4 @@
-#This playbook is used to create a Device Template on vManage using Ansible
+#This playbook is used to modify Feature Template and push config to attached devices on vManage using Ansible
 ---
 - hosts: localhost
   connection: local
