@@ -1,0 +1,78 @@
+#This playbook is used to create a Device Template on vManage using Ansible
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Login to the vManage webpage, then use the returned cookie to get a token for authentication to be used in later tasks
+      uri:
+        url: https://10.10.10.230/j_security_check  #url for retrieving session cookie
+        method: POST
+        body_format: form-urlencoded
+        body:
+          j_username: admin #Username for vManage
+          j_password: admin #Password for vManage
+          enter: Log In
+        status_code: 200
+        validate_certs: False
+      register: login #Saves results of this task so that we are able to use the cookie for later tasks
+    - name: Second Authentication API call from Ansible Tower to vManage to Retrieve the Token
+      uri:
+        url: https://10.10.10.230/dataservice/client/token #url for retrieving token
+        method: GET
+        return_content: true
+        validate_certs: False
+        headers:
+          Content-Type: application/x-www-form-urlencoded
+          Cookie: "{{ login.cookies_string }}" #refers to the cookie retrieved from the 1st Task
+      register: token
+    - name: Modify Feature Template CSR_CAMPUS_LAN_Interface
+      uri:
+        url: https://10.10.10.230/dataservice/template/feature/a42e11f6-8378-415e-9e4e-936339852e62 #URL for modifying the template, we use the template ID to specify the template
+        method: PUT
+        return_content: true
+        validate_certs: False
+        headers:
+          Content-Type: application/json
+          Cookie: "{{ login.cookies_string }}" #uses the cookie generated in the 1st Task
+          X-XSRF-TOKEN: "{{ token.content }}" #Uses the token generated in the 2nd Task
+        body_format: json
+        #The body has all parameters for the specific template CSR_CAMPUS_LAN_Interface
+        body: >
+          {"templateName":"CSR_CAMPUS_LAN_Interface","templateDescription":"CSR_CAMPUS_LAN_Interface","templateType":"cisco_vpn_interface","deviceType":["vedge-CSR-1000v"],"templateMinVersion":"15.0.0","templateDefinition":{"if-name":{"vipObjectType":"object","vipType":"variableName","vipValue":"","vipVariableName":"LAN_CAMPUS_Interface_Name"},"description":{"vipObjectType":"object","vipType":"constant","vipValue":"CAMPUS_LAN Interface","vipVariableName":"vpn_if_description"},"ip":{"address":{"vipObjectType":"object","vipType":"variableName","vipValue":"","vipVariableName":"LAN_Interface_CAMPUS_IP"},"secondary-address":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["address"]}},"dhcp-helper":{"vipObjectType":"list","vipType":"ignore","vipVariableName":"vpn_if_dhcp_helper"},"flow-control":{},"clear-dont-fragment":{},"pmtu":{},"mtu":{"vipObjectType":"object","vipType":"constant","vipValue":1996,"vipVariableName":"vpn_if_ip_mtu"},"static-ingress-qos":{},"tcp-mss-adjust":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"vpn_if_tcp_mss_adjust"},"mac-address":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"vpn_if_mac_address"},"speed":{"vipObjectType":"object","vipType":"ignore","vipValue":"_empty","vipVariableName":"vpn_if_speed"},"duplex":{"vipObjectType":"object","vipType":"ignore","vipValue":"_empty","vipVariableName":"vpn_if_duplex"},"shutdown":{"vipObjectType":"object","vipType":"constant","vipValue":"false","vipVariableName":"vpn_if_shutdown"},"arp-timeout":{"vipObjectType":"object","vipType":"ignore","vipValue":1200,"vipVariableName":"vpn_if_arp_timeout"},"autonegotiate":{"vipObjectType":"object","vipType":"ignore","vipValue":"true","vipVariableName":"vpn_if_autonegotiate"},"shaping-rate":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"rewrite_shaping_rate"},"qos-map":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"qos_map"},"tracker":{"vipObjectType":"list","vipType":"ignore","vipVariableName":"vpn_if_tracker"},"bandwidth-downstream":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"vpn_if_bandwidth_downstream"},"block-non-source-ip":{"vipObjectType":"object","vipType":"ignore","vipValue":"false","vipVariableName":"vpn_if_block_non_source_ip"},"rewrite-rule":{"rule-name":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"rewrite_rule_name"}},"tloc-extension":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"vpn_if_tloc_extension"},"load-interval":{"vipObjectType":"object","vipType":"ignore","vipValue":30,"vipVariableName":"vpn_if_load_interval"},"icmp-redirect-disable":{"vipObjectType":"object","vipType":"ignore","vipValue":"true","vipVariableName":"vpn_if_icmp_redirect_disable"},"tloc-extension-gre-from":{"src-ip":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"vpn_if_tloc-ext_gre_from_src_ip"},"xconnect":{"vipObjectType":"object","vipType":"ignore","vipVariableName":"vpn_if_tloc-ext_gre_from_xconnect"}},"access-list":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["direction"]},"ip-directed-broadcast":{"vipObjectType":"object","vipType":"ignore","vipValue":"false","vipVariableName":"vpn_if_ip-directed-broadcast"},"trustsec":{"propagate":{"sgt":{"vipObjectType":"object","vipType":"constant","vipValue":"true"}},"static":{"sgt":{"vipObjectType":"object","vipType":"constant","vipValue":2,"vipVariableName":"trusted__sgt"},"trusted":{"vipObjectType":"node-only","vipType":"constant","vipValue":"true"}},"enable":{"vipObjectType":"object","vipType":"constant","vipValue":"false"}},"ipv6":{"access-list":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["direction"]},"address":{"vipObjectType":"object","vipType":"ignore","vipValue":"","vipVariableName":"vpn_if_ipv6_ipv6_address"},"dhcp-helper-v6":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["address"]},"secondary-address":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["address"]}},"arp":{"ip":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["addr"]}},"vrrp":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["grp-id"]},"ipv6-vrrp":{"vipType":"ignore","vipValue":[],"vipObjectType":"tree","vipPrimaryKey":["grp-id"]}},"factoryDefault":false}
+      register: modify_template
+    - name: Push modified Feature Configs to Attached devices
+      uri:
+        url: https://10.10.10.230/dataservice/template/device/config/attachfeature #URL to attach and push modified config to devices
+        method: POST
+        return_content: true
+        validate_certs: False
+        headers:
+          Content-Type: application/json
+          Cookie: "{{ login.cookies_string }}" #uses the cookie generated in the 1st Task
+          X-XSRF-TOKEN: "{{ token.content }}" #Uses the token generated in the 2nd Task
+        body_format: json
+        #The body has all parameters for the specific devices attached to the CSR_CAMPUS_LAN_Interface Feature Template
+        body: >
+              {"deviceTemplateList":[{"templateId":"261f10c3-af41-4a76-a283-d9ae5ada478c","device":[{"csv-status":"complete","csv-deviceId":"CSR-D2B3CCC5-FA8F-6016-3944-824C09880695","csv-deviceIP":"10.1.1.182","csv-host-name":"Pod2-CSR-2","/20/LAN_GUEST_Interface_Name/interface/if-name":"GigabitEthernet3","/20/LAN_GUEST_Interface_Name/interface/ip/address":"172.16.200.10/30","/20//router/bgp/as-num":"65004","/20//router/bgp/neighbor/BGP_NeighborIP/address":"172.16.200.9","/20//router/bgp/neighbor/BGP_NeighborIP/remote-as":"65003","/30/LAN_INFRA_Interface_Name/interface/if-name":"GigabitEthernet1","/30/LAN_INFRA_Interface_Name/interface/ip/address":"172.16.200.2/30","/30//router/bgp/as-num":"65004","/30//router/bgp/neighbor/BGP_NeighborIP/address":"172.16.200.1","/30//router/bgp/neighbor/BGP_NeighborIP/remote-as":"65003","/10/LAN_CAMPUS_Interface_Name/interface/if-name":"GigabitEthernet2","/10/LAN_CAMPUS_Interface_Name/interface/ip/address":"172.16.200.6/30","/10//router/bgp/as-num":"65004","/10//router/bgp/neighbor/BGP_NeighborIP/address":"172.16.200.5","/10//router/bgp/neighbor/BGP_NeighborIP/remote-as":"65003","/0/internet_Interface_Name/interface/if-name":"GigabitEthernet6","/0/internet_Interface_Name/interface/ip/address":"192.168.200.20/24","/0/mpls_Interface_Name/interface/if-name":"GigabitEthernet5","/0/mpls_Interface_Name/interface/ip/address":"192.168.201.20/24","/0/Private_1 Interface_Name/interface/if-name":"GigabitEthernet4","/0/Private_1 Interface_Name/interface/ip/address":"10.10.10.26/24","//system/host-name":"Pod2-CSR-2","//system/system-ip":"10.1.1.182","//system/site-id":"202","/10/Loopback10/interface/ip/address":"20.20.20.20/32","csv-templateId":"261f10c3-af41-4a76-a283-d9ae5ada478c"},{"csv-status":"complete","csv-deviceId":"CSR-B0F8CFC2-5B71-CC04-E343-C088D1D510F0","csv-deviceIP":"10.1.1.181","csv-host-name":"Pod2-CSR-1","/20/LAN_GUEST_Interface_Name/interface/if-name":"GigabitEthernet3","/20/LAN_GUEST_Interface_Name/interface/ip/address":"172.16.100.10/30","/20//router/bgp/as-num":"65002","/20//router/bgp/neighbor/BGP_NeighborIP/address":"172.16.100.9","/20//router/bgp/neighbor/BGP_NeighborIP/remote-as":"65001","/30/LAN_INFRA_Interface_Name/interface/if-name":"GigabitEthernet1","/30/LAN_INFRA_Interface_Name/interface/ip/address":"172.16.100.2/30","/30//router/bgp/as-num":"65002","/30//router/bgp/neighbor/BGP_NeighborIP/address":"172.16.100.1","/30//router/bgp/neighbor/BGP_NeighborIP/remote-as":"65001","/10/LAN_CAMPUS_Interface_Name/interface/if-name":"GigabitEthernet2","/10/LAN_CAMPUS_Interface_Name/interface/ip/address":"172.16.100.6/30","/10//router/bgp/as-num":"65002","/10//router/bgp/neighbor/BGP_NeighborIP/address":"172.16.100.5","/10//router/bgp/neighbor/BGP_NeighborIP/remote-as":"65001","/0/internet_Interface_Name/interface/if-name":"GigabitEthernet6","/0/internet_Interface_Name/interface/ip/address":"192.168.200.10/24","/0/mpls_Interface_Name/interface/if-name":"GigabitEthernet4","/0/mpls_Interface_Name/interface/ip/address":"192.168.201.10/24","/0/Private_1 Interface_Name/interface/if-name":"GigabitEthernet5","/0/Private_1 Interface_Name/interface/ip/address":"10.10.10.25/24","//system/host-name":"Pod2-CSR-1","//system/system-ip":"10.1.1.181","//system/site-id":"201","/10/Loopback10/interface/ip/address":"11.11.11.11/32","csv-templateId":"261f10c3-af41-4a76-a283-d9ae5ada478c"}],"isEdited":true,"isMasterEdited":false}]}
+      register: push_config
+    - name: Wait before checking status
+      pause:
+           minutes: 1
+    - name: Get Status of the Pushing of Config
+      uri:
+        url: https://10.10.10.230/dataservice/device/action/status/{{ push_config.json["id"] }} #URL to attach and push modified config to devices
+        method: GET
+        return_content: true
+        validate_certs: False
+        headers:
+          Content-Type: application/json
+          Cookie: "{{ login.cookies_string }}" #uses the cookie generated in the 1st Task
+          X-XSRF-TOKEN: "{{ token.content }}" #Uses the token generated in the 2nd Task
+      register: get_status
+    - name: Outputs the results of the modifying the template and pushing config to devices tasks
+      debug:
+           var: get_status.json.data.0
+    - name: Outputs the results of the modifying the template and pushing config to devices tasks
+      debug:
+           var: get_status.json.data.1
