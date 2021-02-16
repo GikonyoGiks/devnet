@@ -12,13 +12,9 @@
   tasks:
     - name: Configure In Line Tagging
       cisco.ios.ios_config:
-        provider:
-          connection: network_cli
-          username: dnaadmin
-          password: ISEisC00L
-          auth_pass: ISEisC00L
         lines:
           - cts manual
         after: policy static sgt 2 trusted
         parents: interface GigabitEthernet1/0/2
+
 
