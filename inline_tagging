@@ -18,6 +18,7 @@
           password: ISEisC00L
           auth_pass: ISEisC00L
         lines:
-        - cts manual
-        - policy static sgt 2 trusted
+          - cts manual
+        after: policy static sgt 2 trusted
         parents: interface GigabitEthernet1/0/2
+
