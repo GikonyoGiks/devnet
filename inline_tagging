@@ -1,0 +1,23 @@
+#This playbook is used to configure in line tagging on devices 10.10.10.21 and 10.10.10.23
+---
+- hosts: ios_xe
+  gather_facts: no
+  connection: network_cli
+  vars: 
+    ansible_network_os: cisco.ios.ios
+    ansible_connection: network_cli
+    ansible_user: dnaadmin
+    ansible_password: ISEisC00L
+    ansible_ssh_pass: ISEisC00L
+  tasks:
+    - name: Configure In Line Tagging
+      cisco.ios.ios_config:
+        provider:
+          connection: network_cli
+          username: dnaadmin
+          password: ISEisC00L
+          auth_pass: ISEisC00L
+        lines:
+        - cts manual
+        - policy static sgt 2 trusted
+        parents: interface GigabitEthernet1/0/2
