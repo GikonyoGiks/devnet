@@ -4,10 +4,14 @@
   tasks:
   - name: Create tag
     cisco.dnac.tag:
-      host: 10.10.10.224
-      port: 443
-      username: admin
-      password: ISEisC00L
-        state: present
-        description: My Tag
-        name: MyNewTag
+      state: present
+      description: My Tag
+      name: MyNewTag
+-hosts.yml
+dnac_servers:
+  hosts:
+    dnac_server:
+      dnac_host: 10.10.10.224
+      dnac_port: 443
+      dnac_username: admin
+      dnac_password: ISEisC00L
