@@ -15,3 +15,17 @@ dnac_servers:
       dnac_port: 443
       dnac_username: admin
       dnac_password: ISEisC00L
+---
+---
+- hosts: localhost
+  gather_facts: no
+  tasks:
+  - name: Create tag
+    cisco.dnac.tag:
+      host: 10.10.10.224
+      port: 443
+      username: admin
+      password: ISEisC00L
+      state: present
+      description: My Tag
+      name: MyNewTag
