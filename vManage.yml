@@ -44,84 +44,122 @@
         #deviceType is the Device Model
         body: >
           {
-          	"templateName": "CSR_DEVICE_EFT_TEST_v5",
-          	"templateDescription": "CSR_EFT_Device Template TEST v5",
-          	"deviceType": "vedge-CSR-1000v",
-          	"configType": "template",
-          	"factoryDefault": false,
-          	"policyId": "",
-          	"featureTemplateUidRange": [],
-          	"connectionPreferenceRequired": true,
-          	"connectionPreference": true,
-          	"generalTemplates": [{
-          		"templateId": "f14f6e1b-d59a-4ae5-b257-199dbd17e0c7",
-          		"templateType": "cedge"
-          	},
-          	{
-          		"templateId": "f3650003-d999-4fe5-ada9-a77c5e513f55",
-          		"templateType": "cisco_system"
-          	},
-          	{
-          		"templateId": "a1ad36de-c8bf-4ac2-9d4e-d1a12fc25c36",
-          		"templateType": "cisco_logging"
-          	},
-          	{
-          		"templateId": "9663e3d8-9469-4215-b6ec-935f469343c0",
-          		"templateType": "cedge_aaa"
-          	},
-          	{
-          		"templateId": "b3477cfe-a5a5-46a8-bbaa-9be976dd3635",
-          		"templateType": "cisco_bfd"
-          	},
-          	{
-          		"templateId": "5f0b283e-2d20-4d41-b41c-22c8c67ec75a",
-          		"templateType": "cisco_omp"
-          	},
-          	{
-          		"templateId": "2efbe5ee-d567-42c8-b818-fd1d16a29d7e",
-          		"templateType": "cisco_security"
-          	},
-          	{
-          		"templateId": "4b28368f-8a51-4762-92fd-ffe42e7de5b5",
-          		"templateType": "cisco_vpn"
-          	},
-          	{
-          		"templateId": "7c03dcec-aa3e-434d-93e8-2daf1ffbf1ff",
-          		"templateType": "cisco_vpn_interface"
-          	},
-          	{
-          		"templateId": "a56181b3-c54d-4238-a07c-3145de804869",
-          		"templateType": "cisco_vpn_interface"
-          	},
-          	{
-          		"templateId": "73c90069-8b83-4ac7-92ee-b11b8435e5f7",
-          		"templateType": "cisco_vpn_interface"
-          	},
-          	{
-          		"templateId": "d784278a-a5a5-4e5e-b932-8f426944bbcc",
-          		"templateType": "CSR_Mgmt_vpn"
-          	},
-          	{
-          		"templateId": "44351b36-2517-4dbd-b8ae-f362bc534963",
-          		"templateType": "cisco_vpn_interface"
-          	},
-          	{
-          		"templateId": "65f32bfb-49e6-4906-91d3-37fdfbb33dad",
-          		"templateType": "cisco_vpn"
-          	},
-          	{
-          		"templateId": "5c3e526b-ebe5-4781-8eac-7f145fd49d23",
-          		"templateType": "cisco_vpn"
-          	},
-          	{
-          		"templateId": "ba6e3c2f-dfd2-4d21-93b3-34ba0661fa69",
-          		"templateType": "cisco_vpn"
-          	},
-          	{
-          		"templateId": "f14f6e1b-d59a-4ae5-b257-199dbd17e0c7",
-          		"templateType": "cedge_global"
-          	}
-          	]
+              "templateName": "CSR_DEVICE_EFT_TEST_v6",
+              "templateDescription": "CSR_EFT_Device Template",
+              "deviceType": "vedge-CSR-1000v",
+              "configType": "template",
+              "factoryDefault": false,
+              "policyId": "",
+              "featureTemplateUidRange": [],
+              "connectionPreferenceRequired": true,
+              "connectionPreference": true,
+              "generalTemplates": [
+                  {
+                      "templateId": "9663e3d8-9469-4215-b6ec-935f469343c0",
+                      "templateType": "cedge_aaa"
+                  },
+                  {
+                      "templateId": "b3477cfe-a5a5-46a8-bbaa-9be976dd3635",
+                      "templateType": "cisco_bfd"
+                  },
+                  {
+                      "templateId": "5f0b283e-2d20-4d41-b41c-22c8c67ec75a",
+                      "templateType": "cisco_omp"
+                  },
+                  {
+                      "templateId": "2efbe5ee-d567-42c8-b818-fd1d16a29d7e",
+                      "templateType": "cisco_security"
+                  },
+                  {
+                      "templateId": "f3650003-d999-4fe5-ada9-a77c5e513f55",
+                      "templateType": "cisco_system",
+                      "subTemplates": [
+                          {
+                              "templateId": "a1ad36de-c8bf-4ac2-9d4e-d1a12fc25c36",
+                              "templateType": "cisco_logging"
+                          }
+                      ]
+                  },
+                  {
+                      "templateId": "4b28368f-8a51-4762-92fd-ffe42e7de5b5",
+                      "templateType": "cisco_vpn",
+                      "subTemplates": [
+                          {
+                              "templateId": "7c03dcec-aa3e-434d-93e8-2daf1ffbf1ff",
+                              "templateType": "cisco_vpn_interface"
+                          },
+                          {
+                              "templateId": "a56181b3-c54d-4238-a07c-3145de804869",
+                              "templateType": "cisco_vpn_interface"
+                          },
+                          {
+                              "templateId": "73c90069-8b83-4ac7-92ee-b11b8435e5f7",
+                              "templateType": "cisco_vpn_interface"
+                          }
+                      ]
+                  },
+                  {
+                      "templateId": "d784278a-a5a5-4e5e-b932-8f426944bbcc",
+                      "templateType": "cisco_vpn",
+                      "subTemplates": [
+                          {
+                              "templateId": "44351b36-2517-4dbd-b8ae-f362bc534963",
+                              "templateType": "cisco_vpn_interface"
+                          }
+                      ]
+                  },
+                  {
+                      "templateId": "65f32bfb-49e6-4906-91d3-37fdfbb33dad",
+                      "templateType": "cisco_vpn",
+                      "subTemplates": [
+                          {
+                              "templateId": "9068d879-43f7-4759-99d1-3eafae941a92",
+                              "templateType": "cisco_bgp"
+                          },
+                          {
+                              "templateId": "a42e11f6-8378-415e-9e4e-936339852e62",
+                              "templateType": "cisco_vpn_interface"
+                          },
+                          {
+                              "templateId": "b04c2d98-49a2-4f1e-a759-27022e55651a",
+                              "templateType": "cisco_vpn_interface"
+                          }
+                      ]
+                  },
+                  {
+                      "templateId": "5c3e526b-ebe5-4781-8eac-7f145fd49d23",
+                      "templateType": "cisco_vpn",
+                      "subTemplates": [
+                          {
+                              "templateId": "9068d879-43f7-4759-99d1-3eafae941a92",
+                              "templateType": "cisco_bgp"
+                          },
+                          {
+                              "templateId": "5a200ea5-b2e0-41c4-99b9-bfbc1f3da5e5",
+                              "templateType": "cisco_vpn_interface"
+                          }
+                      ]
+                  },
+                  {
+                      "templateId": "ba6e3c2f-dfd2-4d21-93b3-34ba0661fa69",
+                      "templateType": "cisco_vpn",
+                      "subTemplates": [
+                          {
+                              "templateId": "9068d879-43f7-4759-99d1-3eafae941a92",
+                              "templateType": "cisco_bgp"
+                          },
+                          {
+                              "templateId": "5ef2f3c4-e541-4ac3-bc55-21ece7d5f7b8",
+                              "templateType": "cisco_vpn_interface"
+                          }
+                      ]
+                  },
+                  {
+                      "templateId": "f14f6e1b-d59a-4ae5-b257-199dbd17e0c7",
+                      "templateType": "cedge_global"
+                  }
+              ],
+              "templateClass": "cedge"
           }
       register: templates_result #Stores the results of the task for creating the template
     - name: Outputs the token value to be used for authentication
