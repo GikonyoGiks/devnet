@@ -1,0 +1,31 @@
+#This playbook is used to authenticate vManage using Ansible
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+  - name: Log in to the vManage webpage, then use the returned cookie to get a token for authentication to be used in later tasks
+    uri:
+     url: https://10.10.10.230/j_security_check #url for retrieving session cookie
+     method: POST
+     body_format: form-urlencoded
+     body:
+      j_username: admin #Username for vManage
+      j_password: admin #Password for vManage
+      enter: Log In
+     status_code: 200
+     validate_certs: False
+    register: login #Saves results of this play so that we can use it later
+  - name: Second API call to retrieve the vManage Token
+    uri:
+     url: https://10.10.10.230/dataservice/client/token #url for retrieving token
+     method: GET
+     return_content: true
+     validate_certs: False
+     headers:
+           Content-Type: application/x-www-form-urlencoded
+           Cookie: "{{ login.cookies_string }}" #cookie obtained earlier
+    register: token
+  - name: Print token after successful authentication
+    debug:
+        var: token.content 
